@@ -1,7 +1,7 @@
 import {loadPrefixListIntoArray, savePrefixList} from './preferences.js'
 
 var prefixList = [];
-refreshSettings();
+loadSettings();
 
 // GLOBALS
 // var _currentVersion = chrome.app.getDetails().version;
@@ -14,11 +14,21 @@ var preferNewUrl = true;
 chrome.tabs.onCreated.addListener(tabCreated);
 chrome.tabs.onUpdated.addListener(tabUpdated);
 chrome.tabs.onRemoved.addListener(tabClosed);
-chrome.storage.onChanged.addListener(refreshSettings);
+chrome.storage.onChanged.addListener(loadSettings);
+chrome.storage.onChanged.addListener(refreshPrefixListOnChange);
 
-function refreshSettings() { 
-  console.log("Refreshing prefix list");
+function loadSettings() { 
+  console.log("loading prefix list");
   loadPrefixListIntoArray(prefixList);
+}
+
+function refreshPrefixListOnChange(changes, namespace) { 
+  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    console.log(
+      `Storage key "${key}" in namespace "${namespace}" changed.`,
+      `Old value was "${oldValue}", new value is "${newValue}".`
+    );
+  }
 }
 
 function tabCreated(newTab)

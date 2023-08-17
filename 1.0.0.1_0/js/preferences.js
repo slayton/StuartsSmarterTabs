@@ -1,6 +1,6 @@
 console.log('preferences.js')
 
-const prefixListKey = 'prefixList';
+const key = 'prefixList';
 const defaultPrefixList = ['https://app2.greenhouse.io/', 'https://meet.google.com/'];
 
 export function loadPrefixListIntoArray(returnArray) { 
@@ -8,19 +8,26 @@ export function loadPrefixListIntoArray(returnArray) {
         returnArray.concat(result);
     });
 }
+
 export function getPrefixListPromise() { 
-    console.log("polling for saved preferences");
-    return chrome.storage.local.get({prefixListKey: defaultPrefixList}).then(
+    console.log("loading prefix list from local");
+    return chrome.storage.local.get(key).then(
         result => { 
-            var prefixList = result[prefixListKey] || defaultPrefixList;
-            console.log("Loaded Prefix List: " + prefixList);
-            return prefixList
+            var data = result[key];
+            console.log('loaded raw data: ' + data)
+            if (!data) { 
+                console.log("no data, using default");
+                data = defaultPrefixList
+            }
+            console.log("returning prefix List: " + data);
+            return data
         });   
 }
 
 export function savePrefixList(prefixList) { 
-    console.log('Saving prefix list:' + prefixList)
-    const data = {prefixKey: prefixList};
-    chrome.storage.local.set(data).then(() => {});
-    chrome.storage.local.get(prefixListKey).then(result => console.log("Saved prefix list:" + result[prefixListKey]))
+    console.log("Saving new prefix list:" + prefixList)
+    const data = {[key]: prefixList};
+    console.log("Saving data:", data)
+    chrome.storage.local.set(data).then(result => console.log("saved"));
+    chrome.storage.local.get(key).then(result => console.log("prefix list:" + result[key]))
 }

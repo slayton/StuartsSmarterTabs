@@ -1,7 +1,4 @@
-import {loadPrefixListIntoArray, savePrefixList} from './preferences.js'
-
-(function options() {
-"use strict"
+import {getPrefixListPromise, savePrefixList} from './preferences.js'
 
 document.addEventListener('DOMContentLoaded', populateHtmlElements);
 
@@ -14,7 +11,6 @@ var prefixListInputElement;
 var saveButton;
 
 loadSettings(); // Loading from storage doesn't have to wait for page to laod
-registerOnSave();
 
 function loadSettings()
 { 
@@ -36,14 +32,12 @@ function populateHtmlElements()
 
 function populateTextBox(prefixList) { 
   prefixListInputElement = document.getElementById("prefix-list-input");
-  prefixListInputElement.textContent = JSON.stringify(prefixList);
+  prefixListInputElement.textContent = JSON.stringify(prefixList, null, 2);
 }
 
 function saveSettings()
 {
   const parsedPrefixList = JSON.parse(prefixListInputElement.value)
-  console.log("Save button clicked, saving prefix list:" + parsedPrefixList);
-
+  console.log("Save button clicked");
+  savePrefixList(parsedPrefixList);
 }
-
-})();
