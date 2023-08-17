@@ -1,22 +1,22 @@
 {
-   "background": {
-      "scripts": [ "js/common.js", "js/background.js"]
-   },
-   "browser_action": {
-      "default_icon": "img/icon-128.png",
-      "default_title": "Stuart's Smarter Tabs"
-   },
-   "description": "Prevent duplicating tabs you .",
-   "icons": {
-      "128": "img/icon-128.png",
-      "48": "img/icon-48.png"
-   },
-   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaj/0DtC22kp0xcAR2FVS1J/qHw5niSm0Wb7AvUoL8HrIhQxejfjOb0wHHgP8f7XhfX7Vvo/CvTGQbAzJBLPvhf6qioi5EhwywedhupBA41xEIPQLMiOM+cRBHwjSvXSgQ9V/UASOb5Ycz5OKpVySNvyyc9YrFNDraJRk+8404eQIDAQAB",
-   "manifest_version": 2,
-   "name": "Stuart's Smarter Tabs",
-   "options_page": "options.html",
-   "permissions": [ "tabs", "storage"],
-   "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.0.0.0",
-   "web_accessible_resources": [ "img/*", "css/*", "js/*" ]
+    "name": "Stuart's Smarter Tabs",
+    "description": "Preventing duplicate tabs!",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "icons": {
+        "48": "img/icon-48.png",
+        "128": "img/icon-128.png"
+    },
+    "background": {
+        "service_worker": "js/service-worker.js",
+        "type": "module"
+
+    },
+    "options_page": "options.html",
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "host_permissions": [
+       ]
 }

@@ -1,3 +1,5 @@
+import {loadPrefixListIntoArray, savePrefixList} from './preferences.js'
+
 (function options() {
 "use strict"
 
@@ -5,41 +7,43 @@ document.addEventListener('DOMContentLoaded', populateHtmlElements);
 
 var settingsLoaded = false;
 
-var navDupePref;
-var navDupePrefElement;
 var prefixList = Array();
 var prefixListInputElement;
 
+var prefixListInputElement;
+var saveButton;
+
+loadSettings(); // Loading from storage doesn't have to wait for page to laod
+registerOnSave();
+
 function loadSettings()
-{
-  navDupePref = localStorage.getItem('navigation_duplicate_pref') || 'ignore';  
-  prefixList = ['https://app2.greenhouse.io/', 'https://meet.google.com/']
+{ 
+  getPrefixListPromise().then(prefixList => populateTextBox(prefixList));
   settingsLoaded = true;
 }
-loadSettings(); // Loading from storage doesn't have to wait for page to laod
 
 // Fills the HTML elements in the options with values from storage
 function populateHtmlElements()
 {
-  if(settingsLoaded == false)
+  prefixListInputElement = document.getElementById("prefix-list-input");
+  saveButton = document.getElementById('save-btn');
+  saveButton.onclick = saveSettings;
+ 
+  if(settingsLoaded == false) {
     loadSettings();
+  }
+}
 
-  navDupePrefElement = document.getElementById("navigation-duplicate-pref");      
-  navDupePrefElement.value = navDupePref;  
-
-
+function populateTextBox(prefixList) { 
   prefixListInputElement = document.getElementById("prefix-list-input");
   prefixListInputElement.textContent = JSON.stringify(prefixList);
-  
-  navDupePrefElement.onchange = saveSettings;
 }
 
 function saveSettings()
 {
-  localStorage.setItem('navigation_duplicate_pref', navDupePrefElement.value);
-  localStorage.setItem('domain_prefix_list', JSON.stringify(prefixList))
-  let now = new Date();
-  chrome.storage.sync.set({settings_updated: now.valueOf()});  
+  const parsedPrefixList = JSON.parse(prefixListInputElement.value)
+  console.log("Save button clicked, saving prefix list:" + parsedPrefixList);
+
 }
 
 })();

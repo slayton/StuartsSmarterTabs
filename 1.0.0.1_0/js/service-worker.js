@@ -1,33 +1,24 @@
-// Add manifest access to the extension
-chrome.manifest = chrome.app.getDetails();
+import {loadPrefixListIntoArray, savePrefixList} from './preferences.js'
+
+var prefixList = [];
+refreshSettings();
 
 // GLOBALS
-var _currentVersion = chrome.app.getDetails().version;
+// var _currentVersion = chrome.app.getDetails().version;
 var tabIdToUrl = new Map();
 var blankTabs = new Set();
-var navDupePref;
-var prefixList = Array();
 var mostRecentCreatedTabId;
 var preferNewUrl = true;
 
-function log(msg) { 
-  chrome.extension.getBackgroundPage().console.log(msg);
-}
-
-loadSettings();  
 
 chrome.tabs.onCreated.addListener(tabCreated);
 chrome.tabs.onUpdated.addListener(tabUpdated);
 chrome.tabs.onRemoved.addListener(tabClosed);
-chrome.storage.onChanged.addListener(loadSettings);
+chrome.storage.onChanged.addListener(refreshSettings);
 
-function loadSettings()
-{
-  navDupePref = localStorage.getItem('navigation_duplicate_pref') || 'ignore';
-  // prefixList = JSON.parse(localStorage.getItem('domain_prefix_list', "[]") || "[]")
-  prefixList = ['https://app2.greenhouse.io/', 'https://meet.google.com/'];
-  log("navDupePref:" + navDupePref);
-  log("prefixList:" + prefixList);
+function refreshSettings() { 
+  console.log("Refreshing prefix list");
+  loadPrefixListIntoArray(prefixList);
 }
 
 function tabCreated(newTab)
@@ -35,7 +26,7 @@ function tabCreated(newTab)
   if (newTab.incognito) { 
     return;
   }
-  log("Created: " + newTab.id + " " + newTab.url);
+  console.log("Created: " + newTab.id + " " + newTab.url);
   tabIdToUrl.set(newTab.id, newTab.url);
   mostRecentCreatedTabId = newTab.id;
   // Blank tab
@@ -78,15 +69,11 @@ function isNewTabPretendingToBeOld(previousUrl, currentUrl) {
   return previousUrl == currentUrl || previousUrl == "chrome://newtab";
 }
 
-function tabClosed(tab)
+function tabClosed(tabId, changeInfo)
 {
-  if (tab.incognito) { 
-    return;
-  }
-  console.log(tab.id + " closed.");
-  tabIdToUrl.delete(tab.id)
-  blankTabs.delete(tab.id);
-    
+  console.log(tabId + " closed.");
+  tabIdToUrl.delete(tabId)
+  blankTabs.delete(tabId);   
 }
 
 function closeTabIfDuplicate(tab)
