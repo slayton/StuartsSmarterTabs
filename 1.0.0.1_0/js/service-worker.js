@@ -9,26 +9,41 @@ var tabIdToUrl = new Map();
 var blankTabs = new Set();
 var mostRecentCreatedTabId;
 var preferNewUrl = true;
+var duplicatedUrl;
 
+const duplicateTabContextId = 'duplicate-tab'
 
 chrome.tabs.onCreated.addListener(tabCreated);
 chrome.tabs.onUpdated.addListener(tabUpdated);
 chrome.tabs.onRemoved.addListener(tabClosed);
 chrome.storage.onChanged.addListener(loadSettings);
-chrome.storage.onChanged.addListener(refreshPrefixListOnChange);
+chrome.contextMenus.onClicked.addListener(contextMenuOnClick);
+chrome.runtime.onInstalled.addListener(setupContextMenus);
+
+function setupContextMenus() {
+  console.log("Creating context menu")
+  chrome.contextMenus.create({
+    id: duplicateTabContextId,
+    title: 'Duplicate Tab',
+    contexts: ['all'],
+  });
+}
+
+function contextMenuOnClick(info) { 
+  if (info.menuItemId == duplicateTabContextId) { 
+    forceDuplicateTab(info.pageUrl)
+  }
+}
+
+function forceDuplicateTab(url) { 
+  console.log("User wants to duplicate a tab with url:", url);
+  duplicatedUrl = url;
+  chrome.tabs.create({'url': url})
+}
 
 function loadSettings() { 
   console.log("loading prefix list");
   loadPrefixListIntoArray(prefixList);
-}
-
-function refreshPrefixListOnChange(changes, namespace) { 
-  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-    console.log(
-      `Storage key "${key}" in namespace "${namespace}" changed.`,
-      `Old value was "${oldValue}", new value is "${newValue}".`
-    );
-  }
 }
 
 function tabCreated(newTab)
@@ -55,6 +70,11 @@ function tabUpdated(tabId, changeInfo, tab)
     return;
   }
 
+  if (tab.url == duplicatedUrl) { 
+    console.log("Tab was duplicated by user do not close it");
+    duplicatedUrl = undefined;
+    return;
+  }
   // Its a no-op if the item isn't in the set, so no need to check if its in there
   blankTabs.delete(tabId);
 
