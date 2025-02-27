@@ -1,0 +1,23 @@
+{
+    "name": "Stuart's Smarter Tabs",
+    "description": "Preventing duplicate tabs!",
+    "version": "1.0.1",
+    "manifest_version": 3,
+    "icons": {
+        "48": "img/icon-48.png",
+        "128": "img/icon-128.png"
+    },
+    "background": {
+        "service_worker": "js/service-worker.js",
+        "type": "module"
+
+    },
+    "options_page": "options.html",
+    "permissions": [
+        "storage",
+        "tabs",
+        "contextMenus" 
+    ],
+    "host_permissions": [
+       ]
+}
