@@ -1,7 +1,7 @@
 {
     "name": "Stuart's Smarter Tabs",
     "description": "Preventing duplicate tabs!",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "manifest_version": 3,
     "icons": {
         "48": "img/icon-48.png",
@@ -19,5 +19,14 @@
         "contextMenus" 
     ],
     "host_permissions": [
-       ]
+       ],
+    "commands": {
+        "duplicate-tab": {
+            "suggested_key": {
+                "default": "Alt+Shift+D",
+                "mac": "MacCtrl+Shift+D"
+            },
+            "description": "Duplicate current tab"
+        }
+    }
 }

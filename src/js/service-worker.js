@@ -20,6 +20,18 @@ chrome.storage.onChanged.addListener(loadSettings);
 chrome.contextMenus.onClicked.addListener(contextMenuOnClick);
 chrome.runtime.onInstalled.addListener(setupContextMenus);
 
+// Listen for the keyboard shortcut command
+chrome.commands.onCommand.addListener(async (command) => {
+    if (command === "duplicate-tab") {
+      console.log("Duplicate tab shortcut received");
+        // Get the current active tab
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab) {
+            forceDuplicateTab(tab.url);
+        }
+    }
+});
+
 function setupContextMenus() {
   console.log("Creating context menu")
   chrome.contextMenus.create({
